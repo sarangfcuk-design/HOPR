@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../widgets/category_list_test.dart';
+import '../widgets/category_grid.dart';
 import '../widgets/home_header.dart';
 import '../widgets/search_bar_widget.dart';
 
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
 
               SizedBox(height: 24),
 
-              CategoryListTest(),
+              CategoryGrid(),
 
               SizedBox(height: 30),
             ],
