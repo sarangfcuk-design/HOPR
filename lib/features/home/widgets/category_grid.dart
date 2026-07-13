@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../business/presentation/business_list_screen.dart';
 import '../providers/category_provider.dart';
 
 class CategoryGrid extends ConsumerWidget {
@@ -46,22 +47,19 @@ class CategoryGrid extends ConsumerWidget {
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
-
       error: (error, stack) => Center(
         child: Text(
           error.toString(),
           style: const TextStyle(color: Colors.red),
         ),
       ),
-
       data: (items) {
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemCount: items.length,
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             mainAxisSpacing: 20,
             crossAxisSpacing: 16,
@@ -70,36 +68,48 @@ class CategoryGrid extends ConsumerWidget {
           itemBuilder: (context, index) {
             final item = items[index];
 
-            return Column(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(18),
+            return InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BusinessListScreen(
+                      categoryId: item.id,
+                      title: item.name,
+                    ),
                   ),
-                  child: Icon(
-                    getIcon(item.icon),
-                    color: AppColors.primary,
-                    size: 30,
+                );
+              },
+              child: Column(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Icon(
+                      getIcon(item.icon),
+                      color: AppColors.primary,
+                      size: 30,
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 8),
+                  Text(
+                    item.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         );

@@ -8,6 +8,12 @@ class BusinessModel {
   final bool isVerified;
   final bool isFeatured;
 
+  final String phone;
+  final String website;
+  final String coverImage;
+  final String openingTime;
+  final String closingTime;
+
   const BusinessModel({
     required this.id,
     required this.name,
@@ -17,6 +23,11 @@ class BusinessModel {
     required this.rating,
     required this.isVerified,
     required this.isFeatured,
+    required this.phone,
+    required this.website,
+    required this.coverImage,
+    required this.openingTime,
+    required this.closingTime,
   });
 
   factory BusinessModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +40,11 @@ class BusinessModel {
       rating: (json['rating'] ?? 0).toDouble(),
       isVerified: json['is_verified'] ?? false,
       isFeatured: json['is_featured'] ?? false,
+      phone: json['phone']?.toString() ?? '',
+      website: json['website']?.toString() ?? '',
+      coverImage: json['cover_image']?.toString() ?? '',
+      openingTime: json['opening_time']?.toString() ?? '',
+      closingTime: json['closing_time']?.toString() ?? '',
     );
   }
 }
