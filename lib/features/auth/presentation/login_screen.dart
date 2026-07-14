@@ -1,13 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../main/presentation/main_screen.dart';
+import '../providers/auth_provider.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool _loading = false;
+
+  Future<void> _googleLogin() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authProvider);
+
+    if (user != null) {
+      Future.microtask(() {
+        context.go("/main");
+      });
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -51,16 +92,22 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MainScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.login),
-                  label: const Text("Continue with Google"),
+                  onPressed: _loading ? null : _googleLogin,
+                  icon: _loading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.login),
+                  label: Text(
+                    _loading
+                        ? "Signing In..."
+                        : "Continue with Google",
+                  ),
                 ),
               ),
 
@@ -71,12 +118,7 @@ class LoginScreen extends StatelessWidget {
                 height: 55,
                 child: OutlinedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MainScreen(),
-                      ),
-                    );
+                    context.go("/main");
                   },
                   child: const Text("Continue as Guest"),
                 ),

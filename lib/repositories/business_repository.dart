@@ -17,4 +17,19 @@ class BusinessRepository {
         .map((e) => BusinessModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<List<BusinessModel>> getAllBusinesses() async {
+    final List<dynamic> data = await _client
+        .from('businesses')
+        .select()
+        .order('name');
+
+    return data
+        .map(
+          (e) => BusinessModel.fromJson(
+            e as Map<String, dynamic>,
+          ),
+        )
+        .toList();
+  }
 }

@@ -14,6 +14,10 @@ class BusinessModel {
   final String openingTime;
   final String closingTime;
 
+  // NEW
+  final double latitude;
+  final double longitude;
+
   const BusinessModel({
     required this.id,
     required this.name,
@@ -28,6 +32,8 @@ class BusinessModel {
     required this.coverImage,
     required this.openingTime,
     required this.closingTime,
+    required this.latitude,
+    required this.longitude,
   });
 
   factory BusinessModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +51,9 @@ class BusinessModel {
       coverImage: json['cover_image']?.toString() ?? '',
       openingTime: json['opening_time']?.toString() ?? '',
       closingTime: json['closing_time']?.toString() ?? '',
+
+      latitude: (json['latitude'] ?? 0).toDouble(),
+      longitude: (json['longitude'] ?? 0).toDouble(),
     );
   }
 }

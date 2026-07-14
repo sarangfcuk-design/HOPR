@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../favorites/presentation/saved_screen.dart';
 import '../../home/presentation/home_screen.dart';
+import '../../map/presentation/map_screen.dart';
+import '../../profile/presentation/profile_screen.dart';
 import '../../search/presentation/search_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -11,34 +14,25 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int currentIndex = 0;
+  int _selectedIndex = 0;
 
-  final List<Widget> pages = const [
+  final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),
-    Center(
-      child: Text(
-        "Saved",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
-    Center(
-      child: Text(
-        "Profile",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
+    MapScreen(),
+    SavedScreen(),
+    ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[currentIndex],
+      body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
+        selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           setState(() {
-            currentIndex = index;
+            _selectedIndex = index;
           });
         },
         destinations: const [
@@ -51,6 +45,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
             label: "Explore",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: "Map",
           ),
           NavigationDestination(
             icon: Icon(Icons.favorite_border),
