@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../business/presentation/business_detail_screen.dart';
+import '../../../core/services/url_launcher_service.dart';
+import '../widgets/business_bottom_sheet.dart';
 import '../providers/map_provider.dart';
 import '../widgets/business_marker.dart';
 
@@ -27,6 +29,7 @@ class MapScreen extends ConsumerWidget {
           child: Text(error.toString()),
         ),
         data: (data) {
+          final launcher = UrlLauncherService();
           return FlutterMap(
             options: MapOptions(
               initialCenter: LatLng(
@@ -77,16 +80,52 @@ class MapScreen extends ConsumerWidget {
                           child: BusinessMarker(
                             business: business,
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      BusinessDetailScreen(
-                                    business: business,
-                                  ),
-                                ),
-                              );
-                            },
+  showModalBottomSheet(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(
+      top: Radius.circular(24),
+    ),
+  ),
+  builder: (_) {
+    return BusinessBottomSheet(
+      business: business,
+
+      onCall: () async {
+        Navigator.pop(context);
+
+        await launcher.call(
+          business.phone,
+        );
+      },
+
+      onDirections: () async {
+        Navigator.pop(context);
+
+        await launcher.directions(
+          business.latitude,
+          business.longitude,
+        );
+      },
+
+      onDetails: () {
+        Navigator.pop(context);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BusinessDetailScreen(
+              business: business,
+            ),
+          ),
+        );
+      },
+    );
+  },
+);
+},
                           ),
                         ),
                       ),

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/url_launcher_service.dart';
+import '../../../core/services/distance_service.dart';
+import '../../../core/services/business_status_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/rating_badge.dart';
 import '../../../models/business_model.dart';
 import '../../favorites/providers/favorite_provider.dart';
+import '../../map/providers/map_provider.dart';
 
 class BusinessDetailScreen extends ConsumerWidget {
   final BusinessModel business;
@@ -18,8 +21,11 @@ class BusinessDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final launcher = UrlLauncherService();
+    final distanceService = const DistanceService();
+    final statusService = const BusinessStatusService();
 
     final favoriteState = ref.watch(favoriteProvider);
+    final mapData = ref.watch(mapProvider);
 
     final isFavorite = favoriteState.when(
       data: (items) =>
@@ -144,7 +150,71 @@ class BusinessDetailScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+const SizedBox(height: 12),
 
+mapData.when(
+  loading: () => const SizedBox(),
+
+  error: (_, __) => const SizedBox(),
+
+  data: (data) {
+    final distance = distanceService.calculateDistance(
+      userLatitude: data.currentLocation.latitude,
+      userLongitude: data.currentLocation.longitude,
+      businessLatitude: business.latitude,
+      businessLongitude: business.longitude,
+    );
+
+    return Row(
+      children: [
+        const Icon(
+          Icons.place,
+          color: Colors.red,
+          size: 18,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          "${distanceService.formatDistance(distance)} Away",
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 15,
+          ),
+        ),
+      ],
+    );
+  },
+),
+Builder(
+  builder: (context) {
+    final isOpen = statusService.isOpen(
+      openingTime: business.openingTime,
+      closingTime: business.closingTime,
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: isOpen
+            ? Colors.green
+            : Colors.red,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        isOpen
+            ? "🟢 Open Now"
+            : "🔴 Closed",
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  },
+),
                   const SizedBox(
                     height: 18,
                   ),
