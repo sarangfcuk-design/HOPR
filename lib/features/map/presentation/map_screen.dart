@@ -32,12 +32,21 @@ class MapScreen extends ConsumerWidget {
           final launcher = UrlLauncherService();
           return FlutterMap(
             options: MapOptions(
-              initialCenter: LatLng(
-                data.currentLocation.latitude,
-                data.currentLocation.longitude,
-              ),
-              initialZoom: 14,
-            ),
+  initialCenter: LatLng(
+    data.currentLocation.latitude,
+    data.currentLocation.longitude,
+  ),
+
+  initialZoom: 14,
+
+  onPositionChanged: (position, hasGesture) {
+    if (hasGesture) {
+      debugPrint(
+        "Map Center : ${position.center}",
+      );
+    }
+  },
+),
             children: [
               TileLayer(
                 urlTemplate:
