@@ -5,13 +5,14 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../core/services/url_launcher_service.dart';
 import '../../business/presentation/business_detail_screen.dart';
+import '../providers/map_controller_provider.dart';
 import '../providers/map_provider.dart';
 import '../widgets/business_bottom_sheet.dart';
 import '../widgets/business_marker.dart';
-import '../widgets/map_search_bar.dart';
+import '../widgets/category_chips_bar.dart';
 import '../widgets/current_location_marker.dart';
 import '../widgets/map_fab.dart';
-import '../widgets/category_chips_bar.dart';
+import '../widgets/map_search_bar.dart';
 
 class MapScreen extends ConsumerWidget {
   const MapScreen({super.key});
@@ -20,24 +21,36 @@ class MapScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapData = ref.watch(mapProvider);
 
+    final mapController =
+        ref.read(mapControllerProvider);
+
     return Scaffold(
       body: mapData.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
 
-        error: (error, stack) => Center(
-          child: Text(error.toString()),
+        error: (error, stack) =>
+            Center(
+          child: Text(
+            error.toString(),
+          ),
         ),
 
         data: (data) {
-          final launcher = UrlLauncherService();
+          final launcher =
+              UrlLauncherService();
 
           return Stack(
             children: [
 
               FlutterMap(
+
+                mapController:
+                    mapController,
+
                 options: MapOptions(
+
                   initialCenter: LatLng(
                     data.currentLocation.latitude,
                     data.currentLocation.longitude,
@@ -54,15 +67,6 @@ class MapScreen extends ConsumerWidget {
                     flags:
                         InteractiveFlag.all,
                   ),
-
-                  onPositionChanged:
-                      (position, hasGesture) {
-                    if (hasGesture) {
-                      debugPrint(
-                        "Center : ${position.center}",
-                      );
-                    }
-                  },
                 ),
 
                 children: [
@@ -78,8 +82,6 @@ class MapScreen extends ConsumerWidget {
                   MarkerLayer(
                     markers: [
 
-                      /// USER LOCATION
-
                       Marker(
                         point: LatLng(
                           data.currentLocation.latitude,
@@ -90,21 +92,24 @@ class MapScreen extends ConsumerWidget {
 
                         height: 50,
 
-                        child: const CurrentLocationMarker(),
+                        child:
+                            const CurrentLocationMarker(),
                       ),
 
-                      /// BUSINESS MARKERS
-
                       ...data.businesses
+
                           .where(
                             (business) =>
                                 business.latitude !=
-                                    0 &&
+                                        0 &&
                                 business.longitude !=
-                                    0,
+                                        0,
                           )
+
                           .map(
+
                             (business) => Marker(
+
                               point: LatLng(
                                 business.latitude,
                                 business.longitude,
@@ -115,26 +120,29 @@ class MapScreen extends ConsumerWidget {
                               height: 70,
 
                               child: BusinessMarker(
+
                                 business: business,
 
                                 onTap: () {
 
                                   showModalBottomSheet(
+
                                     context: context,
 
                                     isScrollControlled:
                                         true,
 
-                                    useSafeArea:
-                                        true,
+                                    useSafeArea: true,
 
                                     backgroundColor:
                                         Colors.white,
 
                                     shape:
                                         const RoundedRectangleBorder(
+
                                       borderRadius:
                                           BorderRadius.vertical(
+
                                         top:
                                             Radius.circular(
                                           24,
@@ -156,10 +164,8 @@ class MapScreen extends ConsumerWidget {
                                             context,
                                           );
 
-                                          await launcher
-                                              .call(
-                                            business
-                                                .phone,
+                                          await launcher.call(
+                                            business.phone,
                                           );
                                         },
 
@@ -172,81 +178,81 @@ class MapScreen extends ConsumerWidget {
 
                                           await launcher
                                               .directions(
-                                                                                           business
-                                                .latitude,
-                                            business
-                                                .longitude,
+                                            business.latitude,
+                                            business.longitude,
                                           );
                                         },
 
-                                        onDetails:
-                                            () {
+                                        onDetails: () {
 
                                           Navigator.pop(
                                             context,
                                           );
 
                                           Navigator.push(
+
                                             context,
 
                                             MaterialPageRoute(
-                                              builder:
-                                                  (_) =>
-                                                      BusinessDetailScreen(
+
+                                              builder: (_) =>
+                                                  BusinessDetailScreen(
                                                 business:
                                                     business,
                                               ),
+
                                             ),
                                           );
                                         },
+
                                       );
                                     },
+
                                   );
                                 },
+
                               ),
+
                             ),
-                          ),
-                    ],
+
+                          )
+                                              ],
                   ),
                 ],
               ),
 
+              /// SEARCH BAR
               MapSearchBar(
                 onTap: () {
-
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-
+                  ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-
                       content: Text(
                         "Search feature coming soon 🚀",
                       ),
-
                     ),
-
                   );
                 },
               ),
-              
-const CategoryChipsBar(),
 
+              /// CATEGORY CHIPS
+              const CategoryChipsBar(),
+
+              /// CURRENT LOCATION FAB
               MapFab(
-  onPressed: () {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          "Live recenter coming soon 🚀",
-        ),
-      ),
-    );
-  },
-),
+                onPressed: () {
+                  mapController.move(
+                    LatLng(
+                      data.currentLocation.latitude,
+                      data.currentLocation.longitude,
+                    ),
+                    16,
+                  );
+                },
+              ),
             ],
           );
         },
       ),
     );
   }
-} 
+}
