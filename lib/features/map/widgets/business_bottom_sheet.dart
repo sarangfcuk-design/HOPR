@@ -19,21 +19,25 @@ class BusinessBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: Container(
                 width: 45,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius:
-                      BorderRadius.circular(20),
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
             ),
@@ -44,8 +48,7 @@ class BusinessBottomSheet extends StatelessWidget {
               business.name,
               style: const TextStyle(
                 fontSize: 24,
-                fontWeight:
-                    FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
@@ -53,10 +56,56 @@ class BusinessBottomSheet extends StatelessWidget {
 
             Text(
               business.address,
+              style: TextStyle(
+                color: Colors.grey.shade700,
+              ),
             ),
 
             const SizedBox(height: 18),
-                        Row(
+
+            Row(
+              children: [
+                const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+
+                const SizedBox(width: 6),
+
+                Text(
+                  business.rating.toString(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const Spacer(),
+
+                if (business.isVerified)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius:
+                          BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      "Verified",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
@@ -66,7 +115,7 @@ class BusinessBottomSheet extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
 
                 Expanded(
                   child: ElevatedButton.icon(

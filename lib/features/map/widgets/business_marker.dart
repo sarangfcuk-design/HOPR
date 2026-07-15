@@ -4,12 +4,12 @@ import '../../../models/business_model.dart';
 
 class BusinessMarker extends StatelessWidget {
   final BusinessModel business;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const BusinessMarker({
     super.key,
     required this.business,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
@@ -21,30 +21,42 @@ class BusinessMarker extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 4,
+              horizontal: 10,
+              vertical: 6,
             ),
             decoration: BoxDecoration(
               color: business.isFeatured
-                  ? Colors.amber
+                  ? Colors.orange
                   : Colors.blue,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
             child: Text(
               business.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          const Icon(
+
+          const SizedBox(height: 4),
+
+          Icon(
             Icons.location_on,
-            color: Colors.red,
-            size: 40,
+            color: business.isFeatured
+                ? Colors.orange
+                : Colors.red,
+            size: 36,
           ),
         ],
       ),
